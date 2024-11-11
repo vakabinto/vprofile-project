@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  vprodb:
+    build:
+      context: ./Docker-files/db
+      dockerfile: Dockerfile
+    image: vakabinto/db01
+    container_name: vprodb
+    volumes:
+      - vprodb:/etc/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=vprodbpass
+  
+  vprocache01:
+    image: memcached
+    ports:
+      - "11211:11211"
+  vpromq:
+    image: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - vpromq:/var/lib/rabbitmq
+  vproapp:
+    build:
+      context: ./Docker-files/app
+      dockerfile: Dockerfile
+    image: vakabinto/webapp
+    container_name: vproapp
+    ports:
+      - "8080:8080"
+  vproweb:
+    build:
+      context: ./Docker-files/web
+      dockerfile: Dockerfile
+    image: vakabinto/webapp
+    container_name: vproweb
+    ports:
+      - "80:80"
+volumes:
+  vprodb: {}
+  vpromq: {}
+
+
